@@ -22,14 +22,14 @@ class LikesController < ApplicationController
   def destroy
     @like.destroy
     respond_to do |format|
-      format.html { redirect_to likes_url, notice: 'Like was successfully destroyed.' }
+      format.html { redirect_to request.referrer, notice: 'Like was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_dog
+    def set_like
       @like = Like.find(params[:id])
     end
 

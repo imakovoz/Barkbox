@@ -4,6 +4,12 @@
     <%= image_tag url_for(dog.images.first), class: "dog-photo", alt: "Photo of #{dog.name}" %>
   </article>
 </a>
-<%= button_to "Like", {:controller => :likes,
-  :action => 'create', dog_id: dog.id }, :method => :create %>
-
+<% if dog.user != current_user %>
+  <% if dog.likes.where(current_user.id == :user_id).length > 0 %>
+    <%= button_to "Unlike", {:controller => :likes,
+      :action => 'destroy', id: dog.likes.where(current_user.id == :user_id).first }, :method => :delete %>
+  <% else %>
+    <%= button_to "Like", {:controller => :likes,
+      :action => 'create', dog_id: dog.id }, :method => :create %>
+  <% end %>
+<% end %>
