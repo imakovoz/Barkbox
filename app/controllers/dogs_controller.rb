@@ -65,6 +65,17 @@ class DogsController < ApplicationController
     end
   end
 
+  def paginated_index
+    # set default page to 0 for root page
+    params["page"] == nil ? @page = 0 : @page = params["page"].to_i
+    # 5 dogs per page
+    dogs_per_page = 5
+    @dogs = Dog.limit(dogs_per_page).offset(dogs_per_page * @page)
+    # determine if next and prev page should be rendered
+    @next_page = Dog.all.length > dogs_per_page * (@page + 1) ? true : false
+    @prev_page = @page != 0 ? true : false
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_dog
