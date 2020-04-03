@@ -66,6 +66,7 @@ class DogsController < ApplicationController
   end
 
   def paginated_index
+    binding.pry
     # set default page to 0 for root page
     params["page"] == nil ? @page = 0 : @page = params["page"].to_i
     # 5 dogs per page

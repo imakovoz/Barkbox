@@ -48,9 +48,15 @@ dogs = [
     description: 'Tonks loves to run'
   },
 ]
+first_owner = User.new
+first_owner.email = 'force@withyou.com'
+first_owner.name = 'Obi_wan'
+first_owner.password = 'starwars'
+first_owner.password_confirmation = 'starwars'
+first_owner.save!
 
 dogs.each do |dog|
-  dog = Dog.find_or_create_by(name: dog[:name], description: dog[:description])
+  dog = Dog.find_or_create_by(name: dog[:name], description: dog[:description], user_id: first_owner.id)
   directory_name = File.join(Rails.root, 'db', 'seed', "#{dog[:name].downcase}", "*")
 
   Dir.glob(directory_name).each do |filename|
