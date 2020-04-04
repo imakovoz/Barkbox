@@ -4,5 +4,6 @@ Rails.application.routes.draw do
   resources :dogs
   resources :likes, only: [:create, :destroy]
   get 'page/:page', :to => 'dogs#paginated_index'
+  get 'trending/:page', :to => 'dogs#trending_index'
   root to: "dogs#paginated_index"
 end

@@ -66,11 +66,26 @@ class DogsController < ApplicationController
   end
 
   def paginated_index
+    # Like.where('created_at >= ?', 24.hours.ago).group(:dog_id).count
+    
     # set default page to 0 for root page
     params["page"] == nil ? @page = 0 : @page = params["page"].to_i
     # 5 dogs per page
     dogs_per_page = 5
     @dogs = Dog.limit(dogs_per_page).offset(dogs_per_page * @page)
+    # determine if next and prev page should be rendered
+    @next_page = Dog.all.length > dogs_per_page * (@page + 1) ? true : false
+  end
+
+  def trending_index
+    @recent_likes = Like.where('created_at >= ?', 60.minutes.ago).group(:dog_id).count
+
+    # set default page to 0 for root page
+    params["page"] == nil ? @page = 0 : @page = params["page"].to_i
+    # 5 dogs per page
+    dogs_per_page = 5
+    @dogs = Dog.all.sort_by { |dog| @recent_likes[dog.id] || 0 }.reverse!
+    @dogs = @dogs[@page*dogs_per_page, @page*dogs_per_page + dogs_per_page]
     # determine if next and prev page should be rendered
     @next_page = Dog.all.length > dogs_per_page * (@page + 1) ? true : false
     @prev_page = @page != 0 ? true : false
