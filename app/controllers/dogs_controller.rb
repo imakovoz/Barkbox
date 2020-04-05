@@ -4,7 +4,13 @@ class DogsController < ApplicationController
   # GET /dogs
   # GET /dogs.json
   def index
-    @dogs = Dog.all
+    # set default page to 0 for root page
+    params["page"] == nil ? @page = 0 : @page = params["page"].to_i
+    # 5 dogs per page
+    dogs_per_page = 5
+    @dogs = Dog.limit(dogs_per_page).offset(dogs_per_page * @page)
+    # determine if next and prev page should be rendered
+    @next_page = Dog.all.length > dogs_per_page * (@page + 1) ? true : false
   end
 
   # GET /dogs/1
@@ -24,11 +30,12 @@ class DogsController < ApplicationController
   # POST /dogs
   # POST /dogs.json
   def create
-    @dog = Dog.new(dog_params)
-
+    @dog = Dog.new(dog_params.merge({user_id: current_user.id}))
     respond_to do |format|
       if @dog.save
-        @dog.images.attach(params[:dog][:image]) if params[:dog][:image].present?
+        if params[:dog][:image].present?
+          params[:dog][:image].each { |image| @dog.images.attach(image) }
+        end
 
         format.html { redirect_to @dog, notice: 'Dog was successfully created.' }
         format.json { render :show, status: :created, location: @dog }
@@ -44,7 +51,9 @@ class DogsController < ApplicationController
   def update
     respond_to do |format|
       if @dog.update(dog_params)
-        @dog.images.attach(params[:dog][:image]) if params[:dog][:image].present?
+        if params[:dog][:image].present?
+          params[:dog][:image].each { |image| @dog.images.attach(image) }
+        end
 
         format.html { redirect_to @dog, notice: 'Dog was successfully updated.' }
         format.json { render :show, status: :ok, location: @dog }
@@ -66,8 +75,6 @@ class DogsController < ApplicationController
   end
 
   def paginated_index
-    # Like.where('created_at >= ?', 24.hours.ago).group(:dog_id).count
-    
     # set default page to 0 for root page
     params["page"] == nil ? @page = 0 : @page = params["page"].to_i
     # 5 dogs per page
@@ -78,8 +85,9 @@ class DogsController < ApplicationController
   end
 
   def trending_index
+    # find all likes in past hour and group by dog
+    # {dog_id: (count of likes)}
     @recent_likes = Like.where('created_at >= ?', 60.minutes.ago).group(:dog_id).count
-
     # set default page to 0 for root page
     params["page"] == nil ? @page = 0 : @page = params["page"].to_i
     # 5 dogs per page
@@ -94,12 +102,11 @@ class DogsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_dog
-      
       @dog = Dog.find(params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def dog_params
-      params.require(:dog).permit(:name, :description, :images)
+      params.require(:dog).permit(:name, :description, :images, :image)
     end
 end

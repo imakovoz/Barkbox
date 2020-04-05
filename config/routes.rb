@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   devise_for :users
   resources :dogs
   resources :likes, only: [:create, :destroy]
-  get 'page/:page', :to => 'dogs#paginated_index'
+  get 'page/:page', :to => 'dogs#index'
   get 'trending/:page', :to => 'dogs#trending_index'
-  root to: "dogs#paginated_index"
+  root to: "dogs#index"
 end
