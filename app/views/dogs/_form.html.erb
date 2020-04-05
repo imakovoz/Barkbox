@@ -14,6 +14,7 @@
           const refNode = allImageInput[allImageInput.length - 1]
           let newNode = imageNode.cloneNode(true);
           newNode.setAttribute( 'id', `dog_image_${allImageInput.length}`);
+          newNode.querySelector('input').value = ""
           refNode.parentNode.insertBefore(newNode, refNode.nextSibling)
         })
     </script>

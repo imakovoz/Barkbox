@@ -33,6 +33,7 @@ class DogsController < ApplicationController
     @dog = Dog.new(dog_params.merge({user_id: current_user.id}))
     respond_to do |format|
       if @dog.save
+        # allow for multiple images to be passed
         if params[:dog][:image].present?
           params[:dog][:image].each { |image| @dog.images.attach(image) }
         end
@@ -51,6 +52,7 @@ class DogsController < ApplicationController
   def update
     respond_to do |format|
       if @dog.update(dog_params)
+        # allow for multiple images to be passed
         if params[:dog][:image].present?
           params[:dog][:image].each { |image| @dog.images.attach(image) }
         end
@@ -72,16 +74,6 @@ class DogsController < ApplicationController
       format.html { redirect_to dogs_url, notice: 'Dog was successfully destroyed.' }
       format.json { head :no_content }
     end
-  end
-
-  def paginated_index
-    # set default page to 0 for root page
-    params["page"] == nil ? @page = 0 : @page = params["page"].to_i
-    # 5 dogs per page
-    dogs_per_page = 5
-    @dogs = Dog.limit(dogs_per_page).offset(dogs_per_page * @page)
-    # determine if next and prev page should be rendered
-    @next_page = Dog.all.length > dogs_per_page * (@page + 1) ? true : false
   end
 
   def trending_index
@@ -107,6 +99,6 @@ class DogsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def dog_params
-      params.require(:dog).permit(:name, :description, :images, :image)
+      params.require(:dog).permit(:name, :description, :image)
     end
 end
