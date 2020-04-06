@@ -6,8 +6,18 @@
   <% end %>
 
   <p><%= @dog.description %></p>
-
-  <%= link_to "Edit #{@dog.name}'s Profile", edit_dog_path %>
-  <br>
-  <%= link_to "Delete #{@dog.name}'s Profile", dog_path, method: :delete, data: { confirm: 'Are you sure?' } %>
+  <% if current_user && @dog.user != current_user %>
+    <% if @dog.likes.select { |like| like.user_id == current_user.id }.length > 0 %>
+      <%= button_to "Unlike", {:controller => :likes,
+        :action => 'destroy', id: @dog.likes.select { |like| like.user_id == current_user.id }.first.id, authenticity_token: form_authenticity_token }, :method => :delete %>
+    <% else  %>
+      <%= button_to "Like", {:controller => :likes,
+        :action => 'create', dog_id: @dog.id, authenticity_token: form_authenticity_token }, :method => :create %>
+    <% end %>
+  <% end %>
+  <% if current_user == @dog.user %>
+    <%= link_to "Edit #{@dog.name}'s Profile", edit_dog_path %>
+    <br>
+    <%= link_to "Delete #{@dog.name}'s Profile", dog_path, method: :delete, data: { confirm: 'Are you sure?' } %>
+  <% end %>
 </section>

@@ -1,1 +1,15 @@
-<%= render partial: 'thumbnail', collection: @dogs, as: :dog %>
+<%= link_to "Trending Doggos", controller: "dogs", action: "trending_index", page: 0 %>
+<% @dogs.each_with_index do |dog, i| %>
+    <%= render :partial => 'thumbnail', locals: {dog: dog} %>
+    <% if (i + 1 )% 2 == 0 %>
+        <a href="http://www.ilyamakovoz.com/">
+           <img src="<%= asset_path( 'ad.jpg' ) %>" />
+        </a>
+    <% end %>
+ <% end %>
+<% if @page != 0 %>
+    <%= link_to "Previous Page", controller: "dogs", action: "index", page: @page - 1 %>
+<% end %>
+<% if @next_page%>
+    <%= link_to "Next Page", controller: "dogs", action: "index", page: @page + 1 %>
+<% end %>

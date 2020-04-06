@@ -1,8 +1,24 @@
 <%= simple_form_for @dog do |f| %>
   <%= f.input :name %>
   <%= f.input :description, as: :text %>
-  <%= f.input :image, as: :file %>
-
+  <%= f.input :image, input_html: {name: "dog[image][]"}, as: :file, multiple: true, id: "image-1"  %>
+  
+  <script type="text/javascript">
+      var imageNode = document.querySelector('.dog_image');
+  </script>
+  <a class="add-image-button" id="add-image-button" href="#">+ Add image</a>
+    <script type="text/javascript">
+        document.getElementById('add-image-button').addEventListener("click", (e) => {
+          e.preventDefault()
+          const allImageInput = document.querySelectorAll('.dog_image')
+          const refNode = allImageInput[allImageInput.length - 1]
+          let newNode = imageNode.cloneNode(true);
+          newNode.setAttribute( 'id', `dog_image_${allImageInput.length}`);
+          newNode.querySelector('input').value = ""
+          refNode.parentNode.insertBefore(newNode, refNode.nextSibling)
+        })
+    </script>
+  <br>
   <% if @dog.images.any? %>
     <%= image_tag @dog.images.first %>
   <% end %>

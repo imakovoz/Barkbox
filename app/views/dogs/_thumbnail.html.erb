@@ -4,3 +4,12 @@
     <%= image_tag url_for(dog.images.first), class: "dog-photo", alt: "Photo of #{dog.name}" %>
   </article>
 </a>
+<% if current_user && dog.user != current_user %>
+  <% if dog.likes.select { |like| like.user_id == current_user.id }.length > 0 %>
+    <%= button_to "Unlike", {:controller => :likes,
+      :action => 'destroy', id: dog.likes.select { |like| like.user_id == current_user.id }.first.id, authenticity_token: form_authenticity_token }, :method => :delete %>
+  <% else  %>
+    <%= button_to "Like", {:controller => :likes,
+      :action => 'create', dog_id: dog.id, authenticity_token: form_authenticity_token }, :method => :create %>
+  <% end %>
+<% end %>
