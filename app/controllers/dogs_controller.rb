@@ -1,3 +1,5 @@
+DOGS_PER_PAGE = 5
+
 class DogsController < ApplicationController
   before_action :set_dog, only: [:show, :edit, :update, :destroy]
 
@@ -5,12 +7,10 @@ class DogsController < ApplicationController
   # GET /dogs.json
   def index
     # set default page to 0 for root page
-    params["page"] == nil ? @page = 0 : @page = params["page"].to_i
-    # 5 dogs per page
-    dogs_per_page = 5
-    @dogs = Dog.limit(dogs_per_page).offset(dogs_per_page * @page)
+    @page = params["page"].nil? ? 0 : params["page"].to_i
+    @dogs = Dog.limit(DOGS_PER_PAGE).offset(DOGS_PER_PAGE * @page)
     # determine if next and prev page should be rendered
-    @next_page = Dog.all.length > dogs_per_page * (@page + 1) ? true : false
+    @next_page = Dog.all.length > DOGS_PER_PAGE * (@page + 1) ? true : false
   end
 
   # GET /dogs/1
@@ -30,7 +30,7 @@ class DogsController < ApplicationController
   # POST /dogs
   # POST /dogs.json
   def create
-    @dog = Dog.new(dog_params.merge({user_id: current_user.id}))
+    @dog = current_user.dogs.new(dog_params)
     respond_to do |format|
       if @dog.save
         # allow for multiple images to be passed
@@ -82,12 +82,10 @@ class DogsController < ApplicationController
     @recent_likes = Like.where('created_at >= ?', 60.minutes.ago).group(:dog_id).count
     # set default page to 0 for root page
     params["page"] == nil ? @page = 0 : @page = params["page"].to_i
-    # 5 dogs per page
-    dogs_per_page = 5
     @dogs = Dog.all.sort_by { |dog| @recent_likes[dog.id] || 0 }.reverse!
-    @dogs = @dogs[@page*dogs_per_page, @page*dogs_per_page + dogs_per_page]
+    @dogs = @dogs[@page*DOGS_PER_PAGE, @page*DOGS_PER_PAGE + DOGS_PER_PAGE]
     # determine if next and prev page should be rendered
-    @next_page = Dog.all.length > dogs_per_page * (@page + 1) ? true : false
+    @next_page = Dog.all.length > DOGS_PER_PAGE * (@page + 1) ? true : false
     @prev_page = @page != 0 ? true : false
   end
 

@@ -4,7 +4,7 @@ class LikesController < ApplicationController
   # POST /likes
   # POST /likes.json
   def create
-    @like = Like.new(like_params.merge(user_id: current_user.id))
+    current_user.likes.new(like_params)
 
     respond_to do |format|
       if @like.save

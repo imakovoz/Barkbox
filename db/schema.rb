@@ -48,6 +48,8 @@ ActiveRecord::Schema.define(version: 2020_04_03_025935) do
     t.integer "dog_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["dog_id"], name: "index_likes_on_dog_id"
+    t.index ["user_id"], name: "index_likes_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
