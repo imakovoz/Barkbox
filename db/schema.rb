@@ -41,6 +41,7 @@ ActiveRecord::Schema.define(version: 2020_04_03_025935) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id"
+    t.index ["user_id"], name: "index_dogs_on_user_id"
   end
 
   create_table "likes", force: :cascade do |t|
